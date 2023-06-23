@@ -1,3 +1,3 @@
-## Сборка проекта
 
-Для сборки проекта используется [Webpack](https://github.com/jm-program/webpack-static-template) 
+
+[Ссылка на готовый проект](https://todo-cq9fajbpe-codikdodik.vercel.app) 
