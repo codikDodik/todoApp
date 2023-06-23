@@ -1,3 +1,3 @@
-Tode Application
+TodoApplication
 ----
 
