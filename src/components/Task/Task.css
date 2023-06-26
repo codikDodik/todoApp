@@ -64,3 +64,9 @@ html .clear-completed:active {
 .clear-completed:hover {
 	text-decoration: underline;
 }
+
+
+.todo-list li.completed label .description {
+	color: #cdcdcd;
+	text-decoration: line-through;
+}
