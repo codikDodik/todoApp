@@ -37,14 +37,26 @@ export default class App extends Component {
       }),
     }));
   };
-  
+
+  addItem = (text) => {
+    const newTask = createTask(
+      Date.now(),
+      text,
+      new Date().toLocaleString(),
+      false
+    );
+    this.setState((prevState) => ({
+      tasks: [...prevState.tasks, newTask],
+    }));
+  };
+
   render() {
     const tasksLeftCount = this.state.tasks.filter(
       (task) => !task.completed
     ).length;
     return (
       <section className="todoapp">
-        <NewTaskForm />
+        <NewTaskForm onItemAdded={this.addItem} />
         <section className="main">
           <TaskList
             tasks={this.state.tasks}
