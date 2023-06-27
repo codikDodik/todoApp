@@ -8,6 +8,7 @@ export default class Task extends Component {
 
   handleComplete = () => {
     this.setState((prevState) => ({ completed: !prevState.completed }));
+    this.props.onToggleDone();
   };
 
   render() {
