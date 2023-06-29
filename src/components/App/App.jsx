@@ -1,3 +1,4 @@
+
 import { Component } from "react";
 import React from "react";
 import TaskList from "../TaskList";
@@ -18,8 +19,13 @@ export default class App extends Component {
         createTask(2, "Editing task", "5 minutes", false),
         createTask(3, "Active task", "5 minutes", false),
       ],
+      activeFilter: "All",
     };
   }
+
+  handleFilterChange = (filter) => {
+    this.setState({ activeFilter: filter });
+  };
 
   handleDelete = (id) => {
     const updatedTasks = this.state.tasks.filter((task) => task.id !== id);
@@ -38,6 +44,11 @@ export default class App extends Component {
     }));
   };
 
+  handleClearCompleted = () => {
+    const updatedTasks = this.state.tasks.filter((task) => !task.completed);
+    this.setState({ tasks: updatedTasks });
+  };
+
   addItem = (text) => {
     const newTask = createTask(
       Date.now(),
@@ -51,20 +62,32 @@ export default class App extends Component {
   };
 
   render() {
-    const tasksLeftCount = this.state.tasks.filter(
-      (task) => !task.completed
-    ).length;
+    const { tasks, activeFilter } = this.state;
+    const filteredTasks =
+      activeFilter === "All"
+        ? tasks
+        : activeFilter === "Active"
+        ? tasks.filter((task) => !task.completed)
+        : tasks.filter((task) => task.completed);
+
+    const tasksLeftCount = tasks.filter((task) => !task.completed).length;
+
     return (
       <section className="todoapp">
         <NewTaskForm onItemAdded={this.addItem} />
         <section className="main">
           <TaskList
-            tasks={this.state.tasks}
+            tasks={filteredTasks}
             onDeleted={this.handleDelete}
             onToggleDone={this.handleToggleDone}
           />
         </section>
-        <Footer tasksLeftCount={tasksLeftCount} />
+        <Footer
+          tasksLeftCount={tasksLeftCount}
+          activeFilter={activeFilter}
+          onFilterChange={this.handleFilterChange}
+          onClearCompleted={this.handleClearCompleted}
+        />
       </section>
     );
   }
