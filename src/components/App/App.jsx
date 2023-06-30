@@ -1,13 +1,21 @@
+import React, { Component } from "react";
+import PropTypes from "prop-types";
 
-import { Component } from "react";
-import React from "react";
 import TaskList from "../TaskList";
 import NewTaskForm from "../NewTaskForm";
 import Footer from "../Footer";
 import "./App.css";
 
 function createTask(id, description, created, completed) {
-  return { id, description, created, completed };
+  const currentDate = new Date();
+
+  if (created === "17 seconds") {
+    currentDate.setSeconds(currentDate.getSeconds() - 17);
+  } else if (created === "5 minutes") {
+    currentDate.setMinutes(currentDate.getMinutes() - 5);
+  }
+
+  return { id, description, created: currentDate, completed };
 }
 
 export default class App extends Component {
@@ -50,12 +58,7 @@ export default class App extends Component {
   };
 
   addItem = (text) => {
-    const newTask = createTask(
-      Date.now(),
-      text,
-      new Date().toLocaleString(),
-      false
-    );
+    const newTask = createTask(Date.now(), text, new Date(), false);
     this.setState((prevState) => ({
       tasks: [...prevState.tasks, newTask],
     }));
@@ -92,3 +95,20 @@ export default class App extends Component {
     );
   }
 }
+
+App.propTypes = {
+  tasks: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      description: PropTypes.string.isRequired,
+      created: PropTypes.instanceOf(Date).isRequired,
+      completed: PropTypes.bool.isRequired,
+    })
+  ),
+  activeFilter: PropTypes.oneOf(["All", "Active", "Completed"]).isRequired,
+};
+
+App.defaultProps = {
+  tasks: [],
+  activeFilter: "All",
+};

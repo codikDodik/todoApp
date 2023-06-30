@@ -1,5 +1,6 @@
 import "./Task.css";
 import React, { Component } from "react";
+import { formatDistanceToNow } from "date-fns";
 
 export default class Task extends Component {
   state = {
@@ -15,6 +16,8 @@ export default class Task extends Component {
     const { description, created } = this.props.task;
     const { completed } = this.state;
 
+    const createdAgo = formatDistanceToNow(new Date(created));
+
     return (
       <li className={completed ? "completed" : ""}>
         <div className="view">
@@ -28,7 +31,7 @@ export default class Task extends Component {
             <span className={`description ${completed ? "completed" : ""}`}>
               {description}
             </span>
-            <span className="created">created {created} ago</span>
+            <span className="created">created {createdAgo} ago</span>
           </label>
           <button type="button" className="icon icon-edit"></button>
           <button

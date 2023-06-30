@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import TasksFilter from "../TasksFilter";
 import "./Footer.css";
 
@@ -20,6 +21,13 @@ const Footer = ({
       </button>
     </footer>
   );
+};
+
+Footer.propTypes = {
+  tasksLeftCount: PropTypes.number.isRequired,
+  activeFilter: PropTypes.string.isRequired,
+  onFilterChange: PropTypes.func.isRequired,
+  onClearCompleted: PropTypes.func.isRequired,
 };
 
 export default Footer;

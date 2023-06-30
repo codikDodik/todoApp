@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import "./TaskFilter.css";
 
 const TasksFilter = ({ activeFilter, onFilterChange }) => {
@@ -19,13 +20,19 @@ const TasksFilter = ({ activeFilter, onFilterChange }) => {
           <button
             type="button"
             className={activeFilter === name ? "btn selected" : "btn"}
-            onClick={() => handleFilterClick(name)}>
+            onClick={() => handleFilterClick(name)}
+          >
             {label}
           </button>
         </li>
       ))}
     </ul>
   );
+};
+
+TasksFilter.propTypes = {
+  activeFilter: PropTypes.string.isRequired,
+  onFilterChange: PropTypes.func.isRequired,
 };
 
 export default TasksFilter;
