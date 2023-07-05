@@ -24,13 +24,16 @@ export default class NewTaskForm extends Component {
     return (
       <header className="header">
         <h1>todos</h1>
-        <input
-          className="new-todo"
-          placeholder="What needs to be done?"
-          value={this.state.value}
-          onChange={this.handleChange}
-          onKeyDown={this.handleKeyDown}
-        />
+        <label htmlFor="todoInput">
+          <input
+            id="todoInput"
+            className="new-todo"
+            placeholder="What needs to be done?"
+            value={this.state.value}
+            onChange={this.handleChange}
+            onKeyDown={this.handleKeyDown}
+          />
+        </label>
       </header>
     )
   }

@@ -9,7 +9,7 @@ const Footer = ({ tasksLeftCount, activeFilter, onFilterChange, onClearCompleted
     <footer className="footer">
       <span className="todo-count">{tasksLeftCount} items left</span>
       <TasksFilter activeFilter={activeFilter} onFilterChange={onFilterChange} />
-      <button className="clear-completed" onClick={onClearCompleted}>
+      <button type="button" className="clear-completed" onClick={onClearCompleted}>
         Clear completed
       </button>
     </footer>

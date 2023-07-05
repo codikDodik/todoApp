@@ -24,7 +24,7 @@ export default class App extends Component {
     this.state = {
       tasks: [
         createTask(1, 'Completed task', '17 seconds', false),
-        createTask(2, 'Editing task', '5 minutes', false),
+        createTask(2, 'Editable task', '5 minutes', false),
         createTask(3, 'Active task', '5 minutes', false),
       ],
       activeFilter: 'All',
@@ -64,6 +64,18 @@ export default class App extends Component {
     }))
   }
 
+  handleTaskDescriptionChange = (taskId, newDescription) => {
+    this.setState((prevState) => ({
+      tasks: prevState.tasks.map((task) => {
+        if (task.id === taskId) {
+          return { ...task, description: newDescription }
+        } else {
+          return task
+        }
+      }),
+    }))
+  }
+
   render() {
     const { tasks, activeFilter } = this.state
     let filteredTasks
@@ -82,7 +94,12 @@ export default class App extends Component {
       <section className="todoapp">
         <NewTaskForm onItemAdded={this.addItem} />
         <section className="main">
-          <TaskList tasks={filteredTasks} onDeleted={this.handleDelete} onToggleDone={this.handleToggleDone} />
+          <TaskList
+            tasks={filteredTasks}
+            onDeleted={this.handleDelete}
+            onToggleDone={this.handleToggleDone}
+            onDescriptionChange={this.handleTaskDescriptionChange}
+          />
         </section>
         <Footer
           tasksLeftCount={tasksLeftCount}
