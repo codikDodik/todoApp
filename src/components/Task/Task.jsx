@@ -5,7 +5,7 @@ import { formatDistanceToNow } from 'date-fns'
 
 export default class Task extends Component {
   state = {
-    completed: false,
+    completed: this.props.task.completed,
     editing: false,
   }
 
@@ -59,14 +59,17 @@ export default class Task extends Component {
             <span className="created">created {createdAgo} ago</span>
           </button>
           {this.state.editing ? (
-            <input
-              className="editing"
-              type="text"
-              defaultValue={description}
-              onChange={this.handleDescriptionChange}
-              onKeyDown={this.handleKeyDown}
-              autoFocus
-            />
+            <label htmlFor="editingButton">
+              <input
+                className="editing"
+                type="text"
+                id="editingButton"
+                defaultValue={description}
+                onChange={this.handleDescriptionChange}
+                onKeyDown={this.handleKeyDown}
+                autoFocus
+              />
+            </label>
           ) : null}
           <button type="button" className="icon icon-edit" onClick={this.handleEdit}></button>
           <button type="button" className="icon icon-destroy" onClick={() => this.props.onDeleted()}></button>
