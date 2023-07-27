@@ -37,7 +37,7 @@ export default class Task extends Component {
     const createdAgo = formatDistanceToNow(new Date(created))
 
     return (
-      <li className={completed ? 'completed' : ''}>
+      <li className={`default ${completed ? 'completed' : ''}`}>
         <div className="view">
           <label htmlFor="toggleButton">
             <input
@@ -55,9 +55,13 @@ export default class Task extends Component {
             onKeyDown={this.handleKeyDown}
             tabIndex={0}
           >
-            <span className={`description ${completed ? 'completed' : ''}`}>{description}</span>
-            <span className="created">created {createdAgo} ago</span>
+            <div className={`description ${completed ? 'completed' : ''}`}>{description}</div>
           </button>
+          <span>
+            <button className="icon icon-play"></button>
+            <button className="icon icon-pause"></button>
+          </span>
+          <div className="created">created {createdAgo} ago</div>
           {this.state.editing ? (
             <label htmlFor="editingButton">
               <input
