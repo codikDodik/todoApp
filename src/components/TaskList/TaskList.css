@@ -54,8 +54,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 15px 0px 15px 50px;
-  max-width: 265px;
-  min-width: 265px;
+  min-width: 250px;
 }
 
 .view .created {
@@ -65,7 +64,7 @@
   align-items: center;
   right: 90px; /*рефактор*/
   max-width: 150px;
-  margin-left: 25px;
+  margin-left: 15px;
 }
 
 .todo-list li .btn .title {
@@ -128,6 +127,10 @@
 
 .todo-list li .icon-play {
   font-size: 15px;
+}
+
+.todo-list li .icon-pause {
+  margin-right: 5px;
 }
 
 .icon-pause:after {

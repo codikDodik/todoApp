@@ -7,6 +7,32 @@ export default class Task extends Component {
   state = {
     completed: this.props.task.completed,
     editing: false,
+    timerRunning: false,
+    startTime: null,
+    elapsedTime: 0,
+  }
+
+  handleStartTimer = () => {
+    if (!this.state.timerRunning) {
+      this.setState({
+        timerRunning: true,
+        startTime: Date.now() - this.state.elapsedTime,
+      })
+      this.timerInterval = setInterval(() => {
+        this.setState({ elapsedTime: Date.now() - this.state.startTime })
+      }, 1000)
+    }
+  }
+
+  handleStopTimer = () => {
+    clearInterval(this.timerInterval)
+    this.setState({ timerRunning: false })
+  }
+
+  formatElapsedTime() {
+    const minutes = Math.floor(this.state.elapsedTime / 60000)
+    const seconds = ('0' + Math.floor((this.state.elapsedTime % 60000) / 1000)).slice(-2)
+    return `${minutes}:${seconds}`
   }
 
   handleComplete = () => {
@@ -57,9 +83,10 @@ export default class Task extends Component {
           >
             <div className={`description ${completed ? 'completed' : ''}`}>{description}</div>
           </button>
-          <span>
-            <button className="icon icon-play"></button>
-            <button className="icon icon-pause"></button>
+          <span className="description">
+            <button className="icon icon-play" onClick={this.handleStartTimer}></button>
+            <button className="icon icon-pause" onClick={this.handleStopTimer}></button>
+            {this.state.timerRunning || this.state.elapsedTime > 0 ? this.formatElapsedTime() : '0:00'}
           </span>
           <div className="created">created {createdAgo} ago</div>
           {this.state.editing ? (
