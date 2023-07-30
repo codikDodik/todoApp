@@ -102,6 +102,6 @@ html .clear-completed:active {
 }
 
 li .view button + .description {
-  font-size: 17px;
+  font-size: 15px;
   color: gray;
 }
