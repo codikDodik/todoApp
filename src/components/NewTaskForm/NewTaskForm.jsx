@@ -6,13 +6,25 @@ export default class NewTaskForm extends Component {
     super(props)
     this.state = {
       value: '',
+      taskMin: '',
+      taskSec: '',
     }
   }
 
+  handleTimerChange = (event) => {
+    const { name, value } = event.target
+    this.setState({
+      [name]: value,
+    })
+    console.log(this.state.taskMin, this.state.taskSec)
+  }
+
   handleKeyDown = (event) => {
-    if (event.keyCode === 13 && this.state.value.trim() !== '') {
+    if (event.keyCode === 13 && this.state.value.trim() !== '' && this.state.taskMin !== '') {
       this.props.onItemAdded(this.state.value)
       this.setState({ value: '' })
+      this.setState({ taskMin: '' })
+      this.setState({ taskSec: '' })
     }
   }
 
@@ -24,7 +36,7 @@ export default class NewTaskForm extends Component {
     return (
       <header className="header">
         <h1>todos</h1>
-        <label htmlFor="todoInput">
+        <form className="new-todo-form">
           <input
             id="todoInput"
             className="new-todo"
@@ -33,7 +45,31 @@ export default class NewTaskForm extends Component {
             onChange={this.handleChange}
             onKeyDown={this.handleKeyDown}
           />
-        </label>
+          <input
+            type="number"
+            name="taskMin"
+            className="new-todo-form__timer new-todo-form__min"
+            placeholder="Min"
+            required
+            min={0}
+            max={1440}
+            value={this.state.taskMin}
+            onChange={this.handleTimerChange}
+            onKeyDown={this.handleKeyDown}
+          />
+          <input
+            type="number"
+            name="taskSec"
+            className="new-todo-form__timer new-todo-form__sec"
+            placeholder="Sec"
+            min={0}
+            max={60}
+            required
+            value={this.state.taskSec}
+            onChange={this.handleTimerChange}
+            onKeyDown={this.handleKeyDown}
+          />
+        </form>
       </header>
     )
   }

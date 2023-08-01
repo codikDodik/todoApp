@@ -9,7 +9,7 @@ export default class Task extends Component {
     editing: false,
     timerRunning: false,
     startTime: null,
-    elapsedTime: 0,
+    elapsedTime: 150,
   }
 
   handleStartTimer = () => {
