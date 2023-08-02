@@ -3,10 +3,39 @@ import './Task.css'
 import React, { Component } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 
-export default class Task extends Component {
+class Task extends Component {
   state = {
     completed: this.props.task.completed,
     editing: false,
+    timerId: null,
+    currentMin: this.props.task.min,
+    currentSec: this.props.task.sec,
+  }
+
+  handleStartTimer = () => {
+    const timerId = setInterval(() => {
+      if (this.state.currentSec > 0) {
+        this.setState((prevState) => ({ currentSec: prevState.currentSec - 1 }))
+      } else {
+        if (this.state.currentMin > 0) {
+          this.setState((prevState) => ({
+            currentMin: prevState.currentMin - 1,
+            currentSec: 59,
+          }))
+        } else {
+          this.handleStopTimer()
+          this.setState((prevState) => ({ completed: !prevState.completed }))
+          this.props.onToggleDone()
+        }
+      }
+    }, 1000)
+
+    this.setState({ timerId })
+  }
+
+  handleStopTimer = () => {
+    clearInterval(this.state.timerId)
+    this.setState({ timerId: null })
   }
 
   handleComplete = () => {
@@ -32,12 +61,12 @@ export default class Task extends Component {
 
   render() {
     const { description, created } = this.props.task
-    const { completed } = this.state
+    const { completed, currentMin, currentSec } = this.state
 
     const createdAgo = formatDistanceToNow(new Date(created))
 
     return (
-      <li className={completed ? 'completed' : ''}>
+      <li className={`default ${completed ? 'completed' : ''}`}>
         <div className="view">
           <label htmlFor="toggleButton">
             <input
@@ -55,9 +84,16 @@ export default class Task extends Component {
             onKeyDown={this.handleKeyDown}
             tabIndex={0}
           >
-            <span className={`description ${completed ? 'completed' : ''}`}>{description}</span>
-            <span className="created">created {createdAgo} ago</span>
+            <div className={`description ${completed ? 'completed' : ''}`}>{description}</div>
           </button>
+          <div className="description">
+            <button type="button" className="icon icon-play" onClick={this.handleStartTimer}></button>
+            <button type="button" className="icon icon-pause" onClick={this.handleStopTimer}></button>
+            <span>
+              {currentMin}:{currentSec.toString().padStart(2, '0')}
+            </span>
+          </div>
+          <div className="created">created {createdAgo} ago</div>
           {this.state.editing ? (
             <label htmlFor="editingButton">
               <input
@@ -78,3 +114,5 @@ export default class Task extends Component {
     )
   }
 }
+
+export default Task
