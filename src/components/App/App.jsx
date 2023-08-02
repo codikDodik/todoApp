@@ -6,27 +6,17 @@ import NewTaskForm from '../NewTaskForm'
 import Footer from '../Footer'
 import './App.css'
 
-function createTask(id, description, created, completed) {
+function createTask(id, description, created, completed, min, sec) {
   const currentDate = new Date()
 
-  if (created === '17 seconds') {
-    currentDate.setSeconds(currentDate.getSeconds() - 17)
-  } else if (created === '5 minutes') {
-    currentDate.setMinutes(currentDate.getMinutes() - 5)
-  }
-
-  return { id, description, created: currentDate, completed }
+  return { id, description, created: currentDate, completed, min, sec }
 }
 
-export default class App extends Component {
+class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      tasks: [
-        createTask(1, 'Completed task', '17 seconds', false),
-        createTask(2, 'Editable task', '5 minutes', false),
-        createTask(3, 'Active task', '5 minutes', false),
-      ],
+      tasks: [createTask(1, 'Test task', '17 seconds', false, 0, 1)],
       activeFilter: 'All',
     }
   }
@@ -57,10 +47,12 @@ export default class App extends Component {
     this.setState({ tasks: updatedTasks })
   }
 
-  addItem = (text) => {
-    const newTask = createTask(Date.now(), text, new Date(), false)
+  addItem = (text, min, sec) => {
+    const newTask = createTask(Date.now(), text, new Date(), false, min, sec)
     this.setState((prevState) => ({
       tasks: [...prevState.tasks, newTask],
+      taskMin: min,
+      taskSec: sec,
     }))
   }
 
@@ -128,3 +120,5 @@ App.defaultProps = {
   tasks: [],
   activeFilter: 'All',
 }
+
+export default App

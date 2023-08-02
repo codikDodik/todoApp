@@ -3,36 +3,39 @@ import './Task.css'
 import React, { Component } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 
-export default class Task extends Component {
+class Task extends Component {
   state = {
     completed: this.props.task.completed,
     editing: false,
-    timerRunning: false,
-    startTime: null,
-    elapsedTime: 150,
+    timerId: null,
+    currentMin: this.props.task.min,
+    currentSec: this.props.task.sec,
   }
 
   handleStartTimer = () => {
-    if (!this.state.timerRunning) {
-      this.setState({
-        timerRunning: true,
-        startTime: Date.now() - this.state.elapsedTime,
-      })
-      this.timerInterval = setInterval(() => {
-        this.setState({ elapsedTime: Date.now() - this.state.startTime })
-      }, 1000)
-    }
+    const timerId = setInterval(() => {
+      if (this.state.currentSec > 0) {
+        this.setState((prevState) => ({ currentSec: prevState.currentSec - 1 }))
+      } else {
+        if (this.state.currentMin > 0) {
+          this.setState((prevState) => ({
+            currentMin: prevState.currentMin - 1,
+            currentSec: 59,
+          }))
+        } else {
+          this.handleStopTimer()
+          this.setState((prevState) => ({ completed: !prevState.completed }))
+          this.props.onToggleDone()
+        }
+      }
+    }, 1000)
+
+    this.setState({ timerId })
   }
 
   handleStopTimer = () => {
-    clearInterval(this.timerInterval)
-    this.setState({ timerRunning: false })
-  }
-
-  formatElapsedTime() {
-    const minutes = Math.floor(this.state.elapsedTime / 60000)
-    const seconds = ('0' + Math.floor((this.state.elapsedTime % 60000) / 1000)).slice(-2)
-    return `${minutes}:${seconds}`
+    clearInterval(this.state.timerId)
+    this.setState({ timerId: null })
   }
 
   handleComplete = () => {
@@ -58,7 +61,7 @@ export default class Task extends Component {
 
   render() {
     const { description, created } = this.props.task
-    const { completed } = this.state
+    const { completed, currentMin, currentSec } = this.state
 
     const createdAgo = formatDistanceToNow(new Date(created))
 
@@ -83,11 +86,13 @@ export default class Task extends Component {
           >
             <div className={`description ${completed ? 'completed' : ''}`}>{description}</div>
           </button>
-          <span className="description">
-            <button className="icon icon-play" onClick={this.handleStartTimer}></button>
-            <button className="icon icon-pause" onClick={this.handleStopTimer}></button>
-            {this.state.timerRunning || this.state.elapsedTime > 0 ? this.formatElapsedTime() : '0:00'}
-          </span>
+          <div className="description">
+            <button type="button" className="icon icon-play" onClick={this.handleStartTimer}></button>
+            <button type="button" className="icon icon-pause" onClick={this.handleStopTimer}></button>
+            <span>
+              {currentMin}:{currentSec.toString().padStart(2, '0')}
+            </span>
+          </div>
           <div className="created">created {createdAgo} ago</div>
           {this.state.editing ? (
             <label htmlFor="editingButton">
@@ -109,3 +114,5 @@ export default class Task extends Component {
     )
   }
 }
+
+export default Task
