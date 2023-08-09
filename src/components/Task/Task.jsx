@@ -1,118 +1,107 @@
-/* eslint-disable jsx-a11y/no-autofocus */
-import './Task.css'
-import React, { Component } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 
-class Task extends Component {
-  state = {
-    completed: this.props.task.completed,
-    editing: false,
-    timerId: null,
-    currentMin: this.props.task.min,
-    currentSec: this.props.task.sec,
-  }
+import './Task.css'
 
-  handleStartTimer = () => {
-    const timerId = setInterval(() => {
-      if (this.state.currentSec > 0) {
-        this.setState((prevState) => ({ currentSec: prevState.currentSec - 1 }))
+const Task = ({ task, onDeleted, onToggleDone, onDescriptionChange }) => {
+  const [completed, setCompleted] = useState(task.completed)
+  const [editing, setEditing] = useState(false)
+  const [timerId, setTimerId] = useState(null)
+  const [currentMin, setCurrentMin] = useState(task.min)
+  const [currentSec, setCurrentSec] = useState(task.sec)
+
+  const handleStopTimer = useCallback(() => {
+    clearInterval(timerId)
+    setTimerId(null)
+  }, [timerId])
+
+  useEffect(() => {
+    const handleEffect = () => {
+      if (completed) {
+        handleStopTimer()
+      }
+    }
+    handleEffect()
+  }, [completed, handleStopTimer])
+
+  const handleStartTimer = () => {
+    const newTimerId = setInterval(() => {
+      if (currentSec > 0) {
+        setCurrentSec((prevSec) => prevSec - 1)
       } else {
-        if (this.state.currentMin > 0) {
-          this.setState((prevState) => ({
-            currentMin: prevState.currentMin - 1,
-            currentSec: 59,
-          }))
+        if (currentMin > 0) {
+          setCurrentMin((prevMin) => prevMin - 1)
+          setCurrentSec(59)
         } else {
-          this.handleStopTimer()
-          this.setState((prevState) => ({ completed: !prevState.completed }))
-          this.props.onToggleDone()
+          handleStopTimer()
+          setCompleted((prevCompleted) => !prevCompleted)
+          onToggleDone()
         }
       }
     }, 1000)
 
-    this.setState({ timerId })
+    setTimerId(newTimerId)
   }
 
-  handleStopTimer = () => {
-    clearInterval(this.state.timerId)
-    this.setState({ timerId: null })
+  const handleComplete = () => {
+    setCompleted((prevCompleted) => !prevCompleted)
+    onToggleDone()
   }
 
-  handleComplete = () => {
-    this.setState((prevState) => ({ completed: !prevState.completed }))
-    this.props.onToggleDone()
+  const handleEdit = () => {
+    setEditing((prevEditing) => !prevEditing)
   }
 
-  handleEdit = () => {
-    this.setState((prevState) => ({ editing: !prevState.editing }))
-  }
-
-  handleDescriptionChange = (event) => {
+  const handleDescriptionChange = (event) => {
     const newDescription = event.target.value
-    this.props.onDescriptionChange(this.props.task.id, newDescription)
+    onDescriptionChange(task.id, newDescription)
   }
 
-  handleKeyDown = (event) => {
+  const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
       event.preventDefault()
-      this.handleEdit()
+      handleEdit()
     }
   }
 
-  render() {
-    const { description, created } = this.props.task
-    const { completed, currentMin, currentSec } = this.state
+  const { description, created } = task
 
-    const createdAgo = formatDistanceToNow(new Date(created))
+  const createdAgo = formatDistanceToNow(new Date(created))
 
-    return (
-      <li className={`default ${completed ? 'completed' : ''}`}>
-        <div className="view">
-          <label htmlFor="toggleButton">
+  return (
+    <li className={`default ${completed ? 'completed' : ''}`}>
+      <div className="view">
+        <label htmlFor="toggleButton">
+          <input className="toggle" id="toggleButton" type="checkbox" checked={completed} onChange={handleComplete} />
+        </label>
+        <button type="button" className="btn" onClick={handleComplete} onKeyDown={handleKeyDown} tabIndex={0}>
+          <div className={`description ${completed ? 'completed' : ''}`}>{description}</div>
+        </button>
+        <div className="description">
+          <button type="button" className="icon icon-play" onClick={handleStartTimer}></button>
+          <button type="button" className="icon icon-pause" onClick={handleStopTimer}></button>
+          <span>
+            {currentMin}:{currentSec.toString().padStart(2, '0')}
+          </span>
+        </div>
+        <div className="created">created {createdAgo} ago</div>
+        {editing ? (
+          <label htmlFor="editingButton">
             <input
-              className="toggle"
-              id="toggleButton"
-              type="checkbox"
-              checked={completed}
-              onChange={this.handleComplete}
+              className="editing"
+              type="text"
+              id="editingButton"
+              defaultValue={description}
+              onChange={handleDescriptionChange}
+              onKeyDown={handleKeyDown}
             />
           </label>
-          <button
-            type="button"
-            className="btn"
-            onClick={this.handleComplete}
-            onKeyDown={this.handleKeyDown}
-            tabIndex={0}
-          >
-            <div className={`description ${completed ? 'completed' : ''}`}>{description}</div>
-          </button>
-          <div className="description">
-            <button type="button" className="icon icon-play" onClick={this.handleStartTimer}></button>
-            <button type="button" className="icon icon-pause" onClick={this.handleStopTimer}></button>
-            <span>
-              {currentMin}:{currentSec.toString().padStart(2, '0')}
-            </span>
-          </div>
-          <div className="created">created {createdAgo} ago</div>
-          {this.state.editing ? (
-            <label htmlFor="editingButton">
-              <input
-                className="editing"
-                type="text"
-                id="editingButton"
-                defaultValue={description}
-                onChange={this.handleDescriptionChange}
-                onKeyDown={this.handleKeyDown}
-                autoFocus
-              />
-            </label>
-          ) : null}
-          <button type="button" className="icon icon-edit" onClick={this.handleEdit}></button>
-          <button type="button" className="icon icon-destroy" onClick={() => this.props.onDeleted()}></button>
-        </div>
-      </li>
-    )
-  }
+        ) : null}
+        <button type="button" className="icon icon-edit" onClick={handleEdit}></button>
+        <button type="button" className="icon icon-destroy" onClick={() => onDeleted()}></button>
+      </div>
+    </li>
+  )
 }
 
 export default Task
